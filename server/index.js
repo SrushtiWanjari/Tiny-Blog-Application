@@ -27,6 +27,10 @@ app.get("/", (req, res) => {
   });
 });
 
+app.post("/signup", (req, res) => {})
+
+app.post("/login", (req, res) => {})
+
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
