@@ -10,7 +10,7 @@ const postSignup = async (req, res) => {
     })
   }
 
-  const emailValidationRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+  const emailValidationRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const nameValidationRegex = /^[a-zA-Z]+$/;
   const passwordValidationRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -22,7 +22,7 @@ const postSignup = async (req, res) => {
     });
   }
 
-  if (emailValidationRegex.test(email) === false) {
+  if (emailValidationRegex.test(email) == false) {
     return res.status(400).json({
       success: false,
       message: "Email is not valid",
