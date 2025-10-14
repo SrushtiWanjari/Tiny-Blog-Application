@@ -3,6 +3,10 @@ import User from "./../models/User.js";
 const postSignup = async (req, res) => {
   const { name, email, password } = req.body;
 
+  const emailValidationRegex = "^[^@]+@[^@]+\\.[^@]+$";
+  const nameValidationRegex = "^[a-zA-Z]+$";
+  const passwordValidationRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
+
   if(!name){
     return res.status(400).json({
       success: false,
