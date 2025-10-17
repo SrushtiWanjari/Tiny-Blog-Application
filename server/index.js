@@ -2,7 +2,15 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import {postSignup, postLogin} from  "./controllers/user.js";
+import { postSignup, postLogin } from "./controllers/user.js";
+import Blog from "./models/Blog.js";
+import {
+  getBlogForSlug,
+  getBlogs,
+  patchPublishBlog,
+  postBlogs,
+  putBlogs,
+} from "./controllers/blog.js";
 dotenv.config();
 
 const app = express();
@@ -28,9 +36,50 @@ app.get("/", (req, res) => {
   });
 });
 
-app.post("/signup", postSignup);
+const jwtCheck = (req, res, next) => {
+  req.user = null;
 
-app.post("/login", postLogin );
+  const { authorization } = req.headers;
+
+  if (!authorization) {
+    return res.status(400).json({ message: "Authorization token missing" });
+  }
+
+  try {
+    const token = authorization.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid JWT Token" });
+  }
+};
+
+const increaseViewCount = async (req, res, next) => {
+  const { slug } = req.params;
+
+  try {
+    const blog = await Blog.findOne({ slug });
+    if (blog) {
+      blog.viewCount += 1;
+      await blog.save();
+    }
+  } catch (error) {
+    console.error("Error increasing view count:", error);
+  }
+
+  next();
+};
+
+app.post("/signup", postSignup);
+app.post("/login", postLogin);
+app.get("/blogs", getBlogs);
+app.get("/blogs/:slug", increaseViewCount, getBlogForSlug);
+
+app.post("/blogs", jwtCheck, postBlogs);
+app.patch("/blogs/:slug/publish", jwtCheck, patchPublishBlog);
+app.put("/blogs/:slug", jwtCheck, putBlogs);
 
 const PORT = process.env.PORT || 8080;
 
