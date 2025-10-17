@@ -8,6 +8,6 @@ const commentsSchema = new Schema({
     timestamps: true,
 });
 
-const Comments = model("Comments", userSchema);
+const Comments = model("Comments", commentsSchema);
 
 export default Comments;
