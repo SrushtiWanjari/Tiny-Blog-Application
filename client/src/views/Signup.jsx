@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router";
 import axios from "axios";
+import { useState } from "react";
+import { Link } from "react-router"; // ✅ FIXED
+import toast from "react-hot-toast";
 
 function Signup() {
   const [user, setUser] = useState({
@@ -10,21 +11,33 @@ function Signup() {
   });
 
   const signupUser = async () => {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/signup`, user);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/signup`,
+        user
+      );
 
-    console.log(response.data)
+      if (response?.data?.success) {
+        toast.success("Signup successful! Please log in.");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
+      } else {
+        toast.error(response?.data?.message || "Signup failed");
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Try again!");
+      console.error(error);
+    }
   };
 
   return (
     <div>
       <h1 className="text-center text-4xl my-4">Signup</h1>
 
-      <div
-        className="max-w-[400px] mx-auto border-1
-      border-gray-500 py-10 px-14 rounded-md"
-      >
+      <div className="max-w-[400px] mx-auto border border-gray-500 py-10 px-14 rounded-md">
         <input
-          type="name"
+          type="text" // ✅ FIXED
           placeholder="Name"
           className="border p-2 rounded w-full mb-4"
           value={user.name}
@@ -51,7 +64,7 @@ function Signup() {
           }}
         />
         <button
-          className="bg-gray-700 text-white px-4 py-2 rounded-md"
+          className="bg-gray-700 text-white px-6 py-2 rounded-md"
           type="button"
           onClick={signupUser}
         >
@@ -59,7 +72,7 @@ function Signup() {
         </button>
 
         <p className="mt-6">
-          Already have an account?&nbsp;
+          Already have an account?{" "}
           <Link to="/login" className="text-blue-500 underline">
             Login
           </Link>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router"; // ✅ Fixed import
+import toast from "react-hot-toast";
 
 function Login() {
   const [user, setUser] = useState({
@@ -9,14 +10,27 @@ function Login() {
   });
 
   const loginUser = async () => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/login`,
-      user
-    );
-    if (response?.data?.success) {
-      localStorage.setItem("loggedInUser", JSON.stringify(response.data.user));
-      localStorage.setItem("token", response.data.token);
-      window.location.href = "/";
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/login`,
+        user
+      );
+
+      if (response?.data?.success) {
+        toast.success("Login successful!");
+
+        localStorage.setItem("loggedInUser", JSON.stringify(response.data.user));
+        localStorage.setItem("token", response.data.token);
+
+        setTimeout(() => {
+          window.location.href = "/"; // ✅ Redirect to homepage
+        }, 1500);
+      } else {
+        toast.error(response?.data?.message || "Invalid credentials");
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Try again!");
+      console.error(error);
     }
   };
 
@@ -24,7 +38,7 @@ function Login() {
     <div>
       <h1 className="text-center text-4xl my-4">Login</h1>
 
-      <div className="max-w-[400px] mx-auto border-1 border-gray-500 py-10 px-14 rounded-md">
+      <div className="max-w-[400px] mx-auto border border-gray-500 py-10 px-14 rounded-md">
         <input
           type="email"
           placeholder="Email"

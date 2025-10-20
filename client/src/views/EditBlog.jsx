@@ -1,4 +1,4 @@
-import MarkdownEditor from "@uiw/react-markdown-editor";
+import MarkdownEditor from "@uiw/react-md-editor";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
